@@ -1,13 +1,12 @@
 import { apiRequest } from 'platform/utilities/api';
 import recordEvent from 'platform/monitoring/record-event';
-import { watchForButtonClicks, GA_PREFIX } from './utils';
+import { GA_PREFIX, watchForButtonClicks } from './utils';
 
-export const defaultLocale = 'en-US';
+const defaultLocale = 'en-US';
 const localeRegExPattern = /^[a-z]{2}(-[A-Z]{2})?$/;
 let chatBotScenario = 'unknown';
-let root = null;
 
-export const extractLocale = localeParam => {
+const extractLocale = localeParam => {
   if (localeParam === 'autodetect') {
     return navigator.language;
   }
@@ -19,7 +18,7 @@ export const extractLocale = localeParam => {
   return defaultLocale;
 };
 
-export const getUserLocation = callback => {
+const getUserLocation = callback => {
   navigator.geolocation.getCurrentPosition(
     position => {
       const latitude = position.coords.latitude;
@@ -37,16 +36,11 @@ export const getUserLocation = callback => {
   );
 };
 
-const startChat = (user, webchatOptions) => {
-  window.WebChat.renderWebChat(webchatOptions, root);
-};
-
 const initBotConversation = jsonWebToken => {
   // extract the data from the JWT
   const tokenPayload = JSON.parse(atob(jsonWebToken.split('.')[1]));
   const user = {
     id: tokenPayload.userId,
-    name: tokenPayload.userName,
     locale: tokenPayload.locale,
   };
   let domain = undefined;
@@ -108,29 +102,16 @@ const initBotConversation = jsonWebToken => {
       return next(action);
     },
   );
-  const webchatOptions = {
+  return {
     directLine: botConnection,
     styleOptions,
     store: webchatStore,
     userID: user.id,
-    username: user.name,
     locale: user.locale,
   };
-  try {
-    startChat(user, webchatOptions);
-    recordEvent({
-      event: `${GA_PREFIX}-connection-successful`,
-      'error-key': undefined,
-    });
-  } catch (error) {
-    recordEvent({
-      event: `${GA_PREFIX}-connection-failure`,
-      'error-key': 'XX_failed_to_start_chat',
-    });
-  }
 };
 
-export const requestChatBot = loc => {
+const requestChatBot = loc => {
   const params = new URLSearchParams(location.search);
   const locale = params.has('locale')
     ? extractLocale(params.get('locale'))
@@ -148,27 +129,24 @@ export const requestChatBot = loc => {
   }
   return apiRequest(path, { method: 'POST' })
     .then(({ token }) => initBotConversation(token))
-    .catch(error => {
-      // eslint-disable-next-line no-console
-      console.log(error);
+    .catch(() => {
       recordEvent({
         event: `${GA_PREFIX}-connection-failure`,
         'error-key': 'XX_failed_to_init_bot_convo',
       });
     });
 };
+
 const chatRequested = scenario => {
   chatBotScenario = scenario;
   const params = new URLSearchParams(location.search);
   if (params.has('shareLocation')) {
     getUserLocation(requestChatBot);
-  } else {
-    requestChatBot();
   }
+  return requestChatBot();
 };
 
-export default function initializeChatbot(_root) {
-  root = _root;
+export default function initializeChatbot() {
   watchForButtonClicks();
-  chatRequested('va_coronavirus_chatbot');
+  return chatRequested('va_coronavirus_chatbot');
 }
