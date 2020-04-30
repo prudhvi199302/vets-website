@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Modal from '@department-of-veterans-affairs/formation-react/Modal';
 import AlertBox from '@department-of-veterans-affairs/formation-react/AlertBox';
+import { formatAddress } from 'platform/forms/address/helpers';
 import LoadingButton from 'platform/site-wide/loading-button/LoadingButton';
 import {
   openModal,
@@ -17,7 +18,6 @@ import { focusElement } from 'platform/utilities/ui';
 import { getValidationMessageKey } from '../../utilities';
 import { ADDRESS_VALIDATION_MESSAGES } from '../../constants/addressValidationMessages';
 import recordEvent from 'platform/monitoring/record-event';
-import countries from 'platform/user/profile/vet360/constants/countries.json';
 
 import * as VET360 from '../constants';
 
@@ -138,26 +138,6 @@ class AddressValidationModal extends React.Component {
       selectedAddressId,
       confirmedSuggestions,
     } = this.props;
-    const {
-      addressLine1,
-      addressLine2,
-      addressLine3,
-      city,
-      stateCode,
-      zipCode,
-      internationalPostalCode,
-      province,
-      countryCodeIso3,
-    } = address;
-
-    // We display the country except for US addresses (including military bases)
-    const displayCountry = countries.find(
-      country =>
-        country.countryCodeISO3 === countryCodeIso3 &&
-        countryCodeIso3 !== 'USA',
-    );
-
-    const displayCountryName = displayCountry?.countryName;
 
     const isAddressFromUser = id === 'userEntered';
     const hasConfirmedSuggestions =
@@ -168,6 +148,14 @@ class AddressValidationModal extends React.Component {
     const showEditLink = showEditLinkErrorState || showEditLinkNonErrorState;
     const isFirstOptionOrEnabled =
       (isAddressFromUser && validationKey) || !isAddressFromUser;
+
+    // We are not always passing a type here - WHY
+    console.log('In modal component PROPS', this.props);
+
+    const { street, cityStateZip, country } = formatAddress({
+      ...address,
+    });
+
     return (
       <div
         key={id}
@@ -190,28 +178,14 @@ class AddressValidationModal extends React.Component {
           className="vads-u-margin-top--2 vads-u-display--flex vads-u-align-items--center"
         >
           <div className="vads-u-display--flex vads-u-flex-direction--column vads-u-padding-bottom--0p5">
-            {addressLine1 && <span>{addressLine1}</span>}
-            {addressLine2 && <span>{` ${addressLine2}`}</span>}
-            {addressLine3 && <span>{` ${addressLine3}`}</span>}
-
-            {city &&
-              stateCode &&
-              zipCode && <span>{` ${city}, ${stateCode} ${zipCode}`}</span>}
-            {city &&
-              province &&
-              internationalPostalCode && (
-                <span>
-                  {`${city}, ${province}, ${internationalPostalCode}`}
-                </span>
-              )}
-            {/* State/Province/Region is not required with international addresses */}
-            {city &&
-              !province &&
-              internationalPostalCode && (
-                <span>{` ${city}, ${internationalPostalCode}`}</span>
-              )}
-
-            {displayCountryName && <span>{displayCountryName}</span>}
+            {console.log('In modal component', street, cityStateZip, country)}
+            <div>
+              {street}
+              <br />
+              {cityStateZip}
+              <br />
+              {country}
+            </div>
 
             {isAddressFromUser &&
               showEditLink && (
@@ -290,6 +264,7 @@ class AddressValidationModal extends React.Component {
         </AlertBox>
         <form onSubmit={this.onSubmit}>
           <span className="vads-u-font-weight--bold">You entered:</span>
+          {console.log('This is address from user', addressFromUser)}
           {this.renderAddressOption(addressFromUser)}
           {shouldShowSuggestions && (
             <span className="vads-u-font-weight--bold">

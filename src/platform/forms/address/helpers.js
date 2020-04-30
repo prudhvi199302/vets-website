@@ -1,4 +1,5 @@
 import ADDRESS_DATA from './data';
+import countries from 'platform/user/profile/vet360/constants/countries.json';
 
 const STATE_NAMES = ADDRESS_DATA.states;
 const MILITARY_STATES = new Set(ADDRESS_DATA.militaryStates);
@@ -15,7 +16,7 @@ const UNITED_STATES = 'USA';
 export const ADDRESS_TYPES = {
   domestic: 'DOMESTIC',
   international: 'INTERNATIONAL',
-  military: 'MILITARY',
+  military: 'OVERSEAS MILITARY',
 };
 
 /**
@@ -128,39 +129,42 @@ export function formatAddress(address) {
 
   const {
     addressLine1,
-    addressLine3,
     addressLine2,
+    addressLine3,
     city,
+    countryCodeIso3,
     countryName,
     internationalPostalCode,
-    militaryPostOfficeTypeCode,
-    militaryStateCode,
     province,
     stateCode,
-    type,
     zipCode,
+    addressType,
   } = address;
 
-  const country = type === ADDRESS_TYPES.international ? countryName : '';
   let cityStateZip = '';
+
+  const displayCountry = countries.find(
+    country => country.countryCodeISO3 === countryCodeIso3,
+  );
+
+  const displayCountryName = displayCountry?.countryName;
+
+  const country =
+    addressType === ADDRESS_TYPES.international
+      ? countryName || displayCountryName
+      : '';
 
   const street =
     [addressLine1, addressLine2, addressLine3]
       .filter(item => item)
       .join(', ') || '';
 
-  switch (type) {
+  switch (addressType) {
     case ADDRESS_TYPES.domestic:
+    case ADDRESS_TYPES.military:
       cityStateZip = city || '';
       if (city && stateCode) cityStateZip += ', ';
       if (stateCode) cityStateZip += getStateName(stateCode);
-      if (zipCode) cityStateZip += ' ' + zipCode;
-      break;
-
-    case ADDRESS_TYPES.military:
-      cityStateZip = militaryPostOfficeTypeCode || '';
-      if (militaryPostOfficeTypeCode && militaryStateCode) cityStateZip += ', ';
-      if (militaryStateCode) cityStateZip += militaryStateCode;
       if (zipCode) cityStateZip += ' ' + zipCode;
       break;
 
