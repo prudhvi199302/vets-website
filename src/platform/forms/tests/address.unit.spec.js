@@ -36,8 +36,8 @@ const military = {
   addressLine1: '57 Columbus Strassa',
   addressLine2: 'Line2',
   addressLine3: 'Ben Franklin Village',
-  militaryPostOfficeTypeCode: 'APO',
-  militaryStateCode: 'AE',
+  city: 'APO',
+  stateCode: 'AE',
   zipCode: '09028',
   zipSuffix: '1234',
 };

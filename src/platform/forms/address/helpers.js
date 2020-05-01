@@ -2,8 +2,6 @@ import ADDRESS_DATA from './data';
 import countries from 'platform/user/profile/vet360/constants/countries.json';
 
 const STATE_NAMES = ADDRESS_DATA.states;
-const MILITARY_STATES = new Set(ADDRESS_DATA.militaryStates);
-const UNITED_STATES = 'USA';
 
 /**
  * @typedef {string} AddressType
@@ -31,13 +29,6 @@ export const ADDRESS_TYPES = {
  * @property {string} [stateCode]
  * @property {string} [zipCode]
  * @property {string} [zipSuffix]
- * @property {string} [militaryPostOfficeTypeCode]
- * @property {string} [militaryStateCode]
- */
-
-/**
- * @param {Address} address
- * @returns {AddressType}
  */
 
 /**
@@ -46,7 +37,7 @@ export const ADDRESS_TYPES = {
  * @returns {boolean}
  */
 export function isEmptyAddress(address) {
-  const ignore = ['type', 'countryName', 'addressEffectiveDate'];
+  const ignore = ['addressType', 'countryName', 'addressEffectiveDate'];
 
   if (address) {
     return Object.keys(address)
@@ -78,6 +69,7 @@ export function formatAddress(address) {
     addressLine1,
     addressLine2,
     addressLine3,
+    addressType,
     city,
     countryCodeIso3,
     countryName,
@@ -85,7 +77,6 @@ export function formatAddress(address) {
     province,
     stateCode,
     zipCode,
-    addressType,
   } = address;
 
   let cityStateZip = '';
@@ -96,6 +87,7 @@ export function formatAddress(address) {
 
   const displayCountryName = displayCountry?.countryName;
 
+  // Only show country when ADDRESS_TYPES.international
   const country =
     addressType === ADDRESS_TYPES.international
       ? countryName || displayCountryName
@@ -106,12 +98,18 @@ export function formatAddress(address) {
       .filter(item => item)
       .join(', ') || '';
 
+  // Do not look up stateCode when ADDRESS_TYPES.military
+  const stateName =
+    addressType === ADDRESS_TYPES.domestic
+      ? getStateName(stateCode)
+      : stateCode;
+
   switch (addressType) {
     case ADDRESS_TYPES.domestic:
     case ADDRESS_TYPES.military:
       cityStateZip = city || '';
       if (city && stateCode) cityStateZip += ', ';
-      if (stateCode) cityStateZip += getStateName(stateCode);
+      if (stateCode) cityStateZip += stateName;
       if (zipCode) cityStateZip += ' ' + zipCode;
       break;
 
