@@ -121,36 +121,3 @@ describe('isEmptyAddress', () => {
     expect(addressUtils.isEmptyAddress(domestic)).to.equal(false);
   });
 });
-
-describe('consolidateAddress', () => {
-  it('converts a military address into a standard address format by adding the countryName set to USA, militaryPostOfficeTypeCode converted to city, and militaryStateCode converted to stateCode.', () => {
-    const expectedResult = {
-      addressType: 'OVERSEAS MILITARY',
-      countryName: 'USA',
-      addressLine1: military.addressLine1,
-      addressLine2: military.addressLine2,
-      addressLine3: military.addressLine3,
-      city: military.militaryPostOfficeTypeCode,
-      stateCode: military.militaryStateCode,
-      zipCode: military.zipCode,
-      zipSuffix: military.zipSuffix,
-    };
-    expect(addressUtils.consolidateAddress(military)).to.deep.equal(
-      expectedResult,
-    );
-  });
-  it('does not affect non-military addresses', () => {
-    expect(addressUtils.consolidateAddress(domestic)).to.deep.equal(domestic);
-  });
-});
-
-describe('expandAddress', () => {
-  it('converts a previously-consolidated address into the proper model by inferring the address addressType. If it is inferred as military, the inverse conversion of consolidateAddress is performed.', () => {
-    const consolidated = addressUtils.consolidateAddress(military);
-    consolidated.addressType = 'Will be inferred based on address fields';
-    expect(addressUtils.expandAddress(consolidated)).to.deep.equal(military);
-  });
-  it('does not affect non-military addresses', () => {
-    expect(addressUtils.expandAddress(domestic)).to.deep.equal(domestic);
-  });
-});

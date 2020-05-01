@@ -36,62 +36,9 @@ export const ADDRESS_TYPES = {
  */
 
 /**
- * Converts an address into a standardized format so that military address follow the same interface as other address types.
- * If type is Military, then the countryName property is added and set to USA, militaryPostOfficeTypeCode is renamed to city, and militaryStateCode to stateCode.
- * Non-military addresses are unaffected.
- * @param {Address} address
- * @returns {Address} A new Address object
- */
-export function consolidateAddress(address) {
-  const consolidated = {
-    ...address,
-  };
-
-  if (consolidated.type === ADDRESS_TYPES.military) {
-    consolidated.city = consolidated.militaryPostOfficeTypeCode;
-    consolidated.stateCode = consolidated.militaryStateCode;
-    consolidated.countryName = UNITED_STATES;
-    delete consolidated.militaryPostOfficeTypeCode;
-    delete consolidated.militaryStateCode;
-  }
-
-  delete consolidated.addressEffectiveDate;
-  return consolidated;
-}
-
-/**
  * @param {Address} address
  * @returns {AddressType}
  */
-function getInferredAddressType(address) {
-  if (address.countryName !== UNITED_STATES) return ADDRESS_TYPES.international;
-  if (MILITARY_STATES.has(address.stateCode)) return ADDRESS_TYPES.military;
-  return ADDRESS_TYPES.domestic;
-}
-
-/**
- * Converts an address that may have been modified or standardized and needs its type to be inferred.
- * If type is Military, the inverse conversion of 'consolidateAddress' is performed.
- * Non-military addresses are unaffected.
- * @param {Address} address
- * @returns {Address} A new Address object
- */
-export function expandAddress(address) {
-  const expanded = {
-    ...address,
-    type: getInferredAddressType(address),
-  };
-
-  if (expanded.type === ADDRESS_TYPES.military) {
-    expanded.militaryPostOfficeTypeCode = expanded.city;
-    expanded.militaryStateCode = expanded.stateCode;
-    delete expanded.city;
-    delete expanded.stateCode;
-    delete expanded.countryName;
-  }
-
-  return expanded;
-}
 
 /**
  * Returns whether or not the address is considered empty
