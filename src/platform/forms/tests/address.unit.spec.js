@@ -6,7 +6,6 @@ import { expect } from 'chai';
 
 const domestic = {
   addressType: 'DOMESTIC',
-  type: 'DOMESTIC',
   countryName: 'USA',
   addressLine1: '140 Rock Creek Church Rd NW',
   addressLine2: 'Apt 57',
@@ -19,7 +18,6 @@ const domestic = {
 
 const international = {
   addressType: 'INTERNATIONAL',
-  type: 'INTERNATIONAL',
   countryName: 'France',
   addressLine1: '2 Avenue Gabriel',
   addressLine2: 'Line2',
@@ -32,7 +30,6 @@ const international = {
 // 'countryName' is NOT part of the Military Address model.
 const military = {
   addressType: 'OVERSEAS MILITARY',
-  type: 'OVERSEAS MILITARY',
   addressLine1: '57 Columbus Strassa',
   addressLine2: 'Line2',
   addressLine3: 'Ben Franklin Village',

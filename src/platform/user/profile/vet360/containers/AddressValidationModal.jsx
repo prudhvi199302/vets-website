@@ -149,9 +149,6 @@ class AddressValidationModal extends React.Component {
     const isFirstOptionOrEnabled =
       (isAddressFromUser && validationKey) || !isAddressFromUser;
 
-    // We are not always passing a type here - WHY
-    console.log('In modal component PROPS', this.props);
-
     const { street, cityStateZip, country } = formatAddress({
       ...address,
     });
@@ -178,7 +175,6 @@ class AddressValidationModal extends React.Component {
           className="vads-u-margin-top--2 vads-u-display--flex vads-u-align-items--center"
         >
           <div className="vads-u-display--flex vads-u-flex-direction--column vads-u-padding-bottom--0p5">
-            {console.log('In modal component', street, cityStateZip, country)}
             <div>
               {street}
               <br />
@@ -264,7 +260,6 @@ class AddressValidationModal extends React.Component {
         </AlertBox>
         <form onSubmit={this.onSubmit}>
           <span className="vads-u-font-weight--bold">You entered:</span>
-          {console.log('This is address from user', addressFromUser)}
           {this.renderAddressOption(addressFromUser)}
           {shouldShowSuggestions && (
             <span className="vads-u-font-weight--bold">
