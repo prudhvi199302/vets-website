@@ -98,18 +98,12 @@ export function formatAddress(address) {
       .filter(item => item)
       .join(', ') || '';
 
-  // only look up state name for ADDRESS_TYPES.domestic
-  const stateName =
-    addressType === ADDRESS_TYPES.domestic
-      ? getStateName(stateCode)
-      : stateCode;
-
   switch (addressType) {
     case ADDRESS_TYPES.domestic:
     case ADDRESS_TYPES.military:
       cityStateZip = city || '';
       if (city && stateCode) cityStateZip += ', ';
-      if (stateCode) cityStateZip += stateName;
+      if (stateCode) cityStateZip += getStateName(stateCode);
       if (zipCode) cityStateZip += ' ' + zipCode;
       break;
 
