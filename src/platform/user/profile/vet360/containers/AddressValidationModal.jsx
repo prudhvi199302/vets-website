@@ -149,9 +149,7 @@ class AddressValidationModal extends React.Component {
     const isFirstOptionOrEnabled =
       (isAddressFromUser && validationKey) || !isAddressFromUser;
 
-    const { street, cityStateZip, country } = formatAddress({
-      ...address,
-    });
+    const { street, cityStateZip, country } = formatAddress(address);
 
     return (
       <div
