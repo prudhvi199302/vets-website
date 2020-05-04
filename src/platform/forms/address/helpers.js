@@ -98,7 +98,7 @@ export function formatAddress(address) {
       .filter(item => item)
       .join(', ') || '';
 
-  // Do not look up stateCode when ADDRESS_TYPES.military
+  // only look up state name for ADDRESS_TYPES.domestic
   const stateName =
     addressType === ADDRESS_TYPES.domestic
       ? getStateName(stateCode)
