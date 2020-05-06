@@ -43,7 +43,7 @@ describe('formatAddress', () => {
   it('formats domestic addresses with three street lines', () => {
     const expectedResult = {
       street: '140 Rock Creek Church Rd NW, Apt 57, Area Name',
-      cityStateZip: 'Springfield, Oregon 97477',
+      cityStateZip: 'Springfield, OR 97477',
       country: '',
     };
 
@@ -53,7 +53,7 @@ describe('formatAddress', () => {
   it('formats domestic addresses with two street lines', () => {
     const expectedResult = {
       street: '140 Rock Creek Church Rd NW, Apt 57',
-      cityStateZip: 'Springfield, Oregon 97477',
+      cityStateZip: 'Springfield, OR 97477',
       country: '',
     };
     const address = { ...domestic };
@@ -64,7 +64,7 @@ describe('formatAddress', () => {
   it('formats domestic addresses with one street line', () => {
     const expectedResult = {
       street: '140 Rock Creek Church Rd NW',
-      cityStateZip: 'Springfield, Oregon 97477',
+      cityStateZip: 'Springfield, OR 97477',
       country: '',
     };
     const address = { ...domestic };
@@ -76,7 +76,7 @@ describe('formatAddress', () => {
   it('formats military addresses', () => {
     const expectedResult = {
       street: '57 Columbus Strassa, Line2, Ben Franklin Village',
-      cityStateZip: 'APO, AE 09028',
+      cityStateZip: 'APO, Armed Forces Europe (AE) 09028',
       country: '',
     };
 
